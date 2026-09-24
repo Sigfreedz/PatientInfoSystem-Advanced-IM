@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">💧 URINALYSIS RECORDS SHEET</h2>
+    <div class="table-responsive table-custom">
+        <table class="table table-striped table-sm mb-0">
+            <thead>
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Appearance</th>
+                    <th>Color</th>
+                    <th>pH</th>
+                    <th>Sp. Gravity</th>
+                    <th>Protein</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr>
+                    <td>{{ r.patient_id }}</td>
+                    <td>{{ r.name }}</td>
+                    <td>{{ r.order_date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ r.appearance }}</td>
+                    <td>{{ r.color }}</td>
+                    <td>{{ r.ph }}</td>
+                    <td>{{ r.specific_gravity }}</td>
+                    <td>{{ r.protein }}</td>
+                    <td>
+                        <a href="/ua-result/{{ r.order_id }}" class="btn btn-sm btn-info">📄 View Result</a>
+                        <a href="/ua-edit/{{ r.order_id }}" class="btn btn-sm btn-warning">✏️ Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

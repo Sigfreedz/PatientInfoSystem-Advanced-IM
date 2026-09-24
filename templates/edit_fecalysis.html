@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <div class="result-header">
+            <h2>🔬 Edit Fecalysis Results</h2>
+            <p class="text-muted mb-0">Order ID: #{{ result.order_id }} | {{ result.patient_id }} - {{ result.name }} | {{ result.order_date.strftime('%Y-%m-%d') }}</p>
+        </div>
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-6"><label>Appearance</label><input type="text" name="appearance" value="{{ result.appearance }}" class="form-control" required></div>
+                <div class="col-md-6"><label>Consistency</label><input type="text" name="consistency" value="{{ result.consistency }}" class="form-control" required></div>
+                <div class="col-md-6"><label>Occult Blood</label><input type="text" name="occult_blood" value="{{ result.occult_blood }}" class="form-control" required></div>
+                <div class="col-md-6"><label>Parasite ID</label><input type="text" name="parasite_id" value="{{ result.parasite_id }}" class="form-control"></div>
+                <div class="col-md-4"><label>WBC</label><input type="text" name="wbc" value="{{ result.wbc }}" class="form-control"></div>
+                <div class="col-md-4"><label>RBC</label><input type="text" name="rbc" value="{{ result.rbc }}" class="form-control"></div>
+                <div class="col-md-4"><label>Bacteria</label><input type="text" name="bacteria" value="{{ result.bacteria }}" class="form-control"></div>
+                <div class="col-12"><label>Other Findings</label><input type="text" name="other_findings" value="{{ result.other_findings }}" class="form-control"></div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-warning btn-lg">Update Results</button>
+                <a href="/fecalysis-records" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

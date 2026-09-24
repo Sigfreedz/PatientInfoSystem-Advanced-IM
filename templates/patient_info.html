@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">📋 PATIENT INFORMATION</h2>
+    <div class="table-responsive table-custom">
+        <table class="table table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Sex</th>
+                    <th>Address</th>
+                    <th>Contact</th>
+                    <th>Last Visit</th>
+                    <th>Tests Taken</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in patients %}
+                <tr>
+                    <td>{{ p.patient_id }}</td>
+                    <td>{{ p.first_name }} {{ p.last_name }}</td>
+                    <td>{{ p.age }}</td>
+                    <td>{{ p.sex }}</td>
+                    <td>{{ p.address }}</td>
+                    <td>{{ p.contact }}</td>
+                    <td>{{ p.last_visit.strftime('%Y-%m-%d') if p.last_visit else 'N/A' }}</td>
+                    <td>
+                        {% if p.tests_taken %}
+                            {% set tests = p.tests_taken.split(',') %}
+                            {% for test in tests %}
+                                <span class="badge bg-primary">{{ test }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted">No tests</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="/patients/edit/{{ p.patient_id }}" class="btn btn-sm btn-warning">✏️ Edit</a>
+                        <a href="/billing/{{ p.patient_id }}" class="btn btn-sm btn-success">💵 Billing</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

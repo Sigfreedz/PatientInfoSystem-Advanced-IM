@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Patient Records</h2>
+    <a href="/patients/add" class="btn btn-success">+ Add New Patient</a>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr><th>ID</th><th>Name</th><th>Age</th><th>Sex</th><th>Address</th><th>Contact</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for p in patients %}
+            <tr>
+                <td>{{ p.patient_id }}</td>
+                <td>{{ p.first_name }} {{ p.last_name }}</td>
+                <td>{{ p.age }}</td>
+                <td>{{ p.sex }}</td>
+                <td>{{ p.address }}</td>
+                <td>{{ p.contact }}</td>
+                <td>
+                    <a href="/patients/edit/{{ p.patient_id }}" class="btn btn-sm btn-warning">Edit</a>
+                    <form action="/patients/delete/{{ p.patient_id }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this patient? Related orders/results will also be removed.');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="text-center">No patients found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

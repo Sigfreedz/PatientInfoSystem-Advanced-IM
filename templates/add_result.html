@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <div class="result-header">
+            <h2>🏥 DIAGNOSTIC CLINIC</h2>
+            <h4>ENTER {{ test_type }} RESULTS</h4>
+            <p class="text-muted">Order ID: #{{ order_id }}</p>
+        </div>
+
+        <form method="POST">
+            {% if test_type == 'CBC' %}
+            <div class="row g-3">
+                <div class="col-md-3"><label>WBC</label><input type="number" step="0.01" name="wbc" class="form-control" required></div>
+                <div class="col-md-3"><label>RBC</label><input type="number" step="0.01" name="rbc" class="form-control" required></div>
+                <div class="col-md-3"><label>Hemoglobin (g/dL)</label><input type="number" step="0.01" name="hemoglobin" class="form-control" required></div>
+                <div class="col-md-3"><label>Hematocrit (%)</label><input type="number" step="0.01" name="hematocrit" class="form-control" required></div>
+                <div class="col-md-3"><label>Platelets</label><input type="number" name="platelets" class="form-control" required></div>
+                <div class="col-md-3"><label>MCV</label><input type="number" name="mcv" class="form-control" required></div>
+                <div class="col-md-3"><label>MCH</label><input type="number" name="mch" class="form-control" required></div>
+                <div class="col-md-3"><label>Neutrophils (%)</label><input type="number" step="0.01" name="neutrophils" class="form-control" required></div>
+                <div class="col-md-3"><label>Lymphocytes (%)</label><input type="number" step="0.01" name="lymphocytes" class="form-control" required></div>
+                <div class="col-md-3"><label>Monocytes (%)</label><input type="number" step="0.01" name="monocytes" class="form-control" required></div>
+                <div class="col-md-3"><label>Eosinophils (%)</label><input type="number" step="0.01" name="eosinophils" class="form-control" required></div>
+                <div class="col-md-3"><label>Basophils (%)</label><input type="number" step="0.01" name="basophils" class="form-control" required></div>
+            </div>
+
+            {% elif test_type == 'URINALYSIS' %}
+            <div class="row g-3">
+                <div class="col-md-6"><label>Appearance</label><input type="text" name="appearance" class="form-control" placeholder="Clear, Turbid..." required></div>
+                <div class="col-md-6"><label>Color</label><input type="text" name="color" class="form-control" placeholder="Pale Yellow, Dark..." required></div>
+                <div class="col-md-3"><label>pH</label><input type="number" step="0.1" name="ph" class="form-control" required></div>
+                <div class="col-md-3"><label>Specific Gravity</label><input type="number" step="0.001" name="specific_gravity" class="form-control" required></div>
+                <div class="col-md-3"><label>Glucose</label><input type="text" name="glucose" class="form-control" value="Negative" required></div>
+                <div class="col-md-3"><label>Protein</label><input type="text" name="protein" class="form-control" value="Negative" required></div>
+                <div class="col-md-3"><label>Ketones</label><input type="text" name="ketones" class="form-control" value="Negative" required></div>
+                <div class="col-md-3"><label>Nitrites</label><input type="text" name="nitrites" class="form-control" value="Negative" required></div>
+                <div class="col-12"><label>Other Findings</label><input type="text" name="other_findings" class="form-control" placeholder="None, WBCs present, etc."></div>
+            </div>
+
+            {% elif test_type == 'FECALYSIS' %}
+            <div class="row g-3">
+                <div class="col-md-6"><label>Appearance</label><input type="text" name="appearance" class="form-control" placeholder="Yellow, Brown..." required></div>
+                <div class="col-md-6"><label>Consistency</label><input type="text" name="consistency" class="form-control" placeholder="Soft, Formed, Watery..." required></div>
+                <div class="col-md-6"><label>Occult Blood</label><input type="text" name="occult_blood" class="form-control" value="Negative" required></div>
+                <div class="col-md-6"><label>Parasite ID</label><input type="text" name="parasite_id" class="form-control" value="None" placeholder="Giardia, Ascaris, None..."></div>
+                <div class="col-md-4"><label>WBC</label><input type="text" name="wbc" class="form-control" placeholder="0/hpf"></div>
+                <div class="col-md-4"><label>RBC</label><input type="text" name="rbc" class="form-control" placeholder="0/hpf"></div>
+                <div class="col-md-4"><label>Bacteria</label><input type="text" name="bacteria" class="form-control" placeholder="Few, Moderate, Abundant"></div>
+                <div class="col-12"><label>Other Findings</label><input type="text" name="other_findings" class="form-control" placeholder="No abnormalities, mucus, etc."></div>
+            </div>
+            {% endif %}
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success btn-lg">💾 Save Results</button>
+                <a href="/patient-info" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

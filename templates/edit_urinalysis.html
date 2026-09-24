@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <div class="result-header">
+            <h2>💧 Edit Urinalysis Results</h2>
+            <p class="text-muted mb-0">Order ID: #{{ result.order_id }} | {{ result.patient_id }} - {{ result.name }} | {{ result.order_date.strftime('%Y-%m-%d') }}</p>
+        </div>
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-6"><label>Appearance</label><input type="text" name="appearance" value="{{ result.appearance }}" class="form-control" required></div>
+                <div class="col-md-6"><label>Color</label><input type="text" name="color" value="{{ result.color }}" class="form-control" required></div>
+                <div class="col-md-3"><label>pH</label><input type="number" step="0.1" name="ph" value="{{ result.ph }}" class="form-control" required></div>
+                <div class="col-md-3"><label>Specific Gravity</label><input type="number" step="0.001" name="specific_gravity" value="{{ result.specific_gravity }}" class="form-control" required></div>
+                <div class="col-md-3"><label>Glucose</label><input type="text" name="glucose" value="{{ result.glucose }}" class="form-control" required></div>
+                <div class="col-md-3"><label>Protein</label><input type="text" name="protein" value="{{ result.protein }}" class="form-control" required></div>
+                <div class="col-md-3"><label>Ketones</label><input type="text" name="ketones" value="{{ result.ketones }}" class="form-control" required></div>
+                <div class="col-md-3"><label>Nitrites</label><input type="text" name="nitrites" value="{{ result.nitrites }}" class="form-control" required></div>
+                <div class="col-12"><label>Other Findings</label><input type="text" name="other_findings" value="{{ result.other_findings }}" class="form-control"></div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-warning btn-lg">Update Results</button>
+                <a href="/urinalysis-records" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

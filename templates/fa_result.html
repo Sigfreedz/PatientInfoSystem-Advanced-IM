@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <div class="result-header">
+            <h2>🏥 DIAGNOSTIC CLINIC</h2>
+            <h4>FECALYSIS REPORT/RESULTS</h4>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <strong>PATIENT ID:</strong> {{ result.patient_id }}<br>
+                <strong>NAME:</strong> {{ result.first_name }} {{ result.last_name }}
+            </div>
+            <div class="col-md-6">
+                <strong>AGE:</strong> {{ result.age }}<br>
+                <strong>DATE OF TEST:</strong> {{ result.order_date.strftime('%m/%d/%Y') }}
+            </div>
+        </div>
+        
+        <table class="table table-bordered">
+            <tr>
+                <td><strong>APPEARANCE:</strong></td><td>{{ result.appearance }}</td>
+                <td><strong>WBC:</strong></td><td>{{ result.wbc }}</td>
+            </tr>
+            <tr>
+                <td><strong>CONSISTENCY:</strong></td><td>{{ result.consistency }}</td>
+                <td><strong>RBC:</strong></td><td>{{ result.rbc }}</td>
+            </tr>
+            <tr>
+                <td><strong>OCCULT BLOOD:</strong></td><td>{{ result.occult_blood }}</td>
+                <td><strong>BACTERIA:</strong></td><td>{{ result.bacteria }}</td>
+            </tr>
+            <tr>
+                <td><strong>PARASITE ID:</strong></td><td>{{ result.parasite_id }}</td>
+                <td><strong>OTHER FINDINGS:</strong></td><td>{{ result.other_findings }}</td>
+            </tr>
+        </table>
+        
+        <div class="text-center mt-4">
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Print Report</button>
+            <a href="/fecalysis-records" class="btn btn-secondary">← Back to Records</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

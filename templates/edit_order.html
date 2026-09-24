@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <h2 class="text-center mb-4">Edit Test Order #{{ order.order_id }}</h2>
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Patient</label>
+                    <select name="patient_id" class="form-select" required>
+                        {% for p in patients %}
+                        <option value="{{ p.patient_id }}" {% if p.patient_id == order.patient_id %}selected{% endif %}>
+                            {{ p.patient_id }} - {{ p.full_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Test</label>
+                    <select name="test_id" class="form-select" required>
+                        {% for t in tests %}
+                        <option value="{{ t.test_id }}" {% if t.test_id == order.test_id %}selected{% endif %}>
+                            {{ t.test_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Order Date</label>
+                    <input type="date" name="order_date" value="{{ order.order_date }}" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select" required>
+                        <option value="PENDING" {% if order.status == 'PENDING' %}selected{% endif %}>PENDING</option>
+                        <option value="COMPLETED" {% if order.status == 'COMPLETED' %}selected{% endif %}>COMPLETED</option>
+                        <option value="CANCELLED" {% if order.status == 'CANCELLED' %}selected{% endif %}>CANCELLED</option>
+                    </select>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-warning btn-lg">Update Order</button>
+                <a href="/orders" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

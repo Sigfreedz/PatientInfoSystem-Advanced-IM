@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Test Catalog</h2>
+    </div>
+    <div class="table-responsive table-custom">
+        <table class="table table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>Test ID</th>
+                    <th>Test Name</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tests %}
+                <tr>
+                    <td>{{ t.test_id }}</td>
+                    <td>{{ t.test_name }}</td>
+                    <td>{{ "%.2f"|format(t.price) }}</td>
+                    <td>{{ t.description }}</td>
+                    <td>
+                        <a href="/tests/edit/{{ t.test_id }}" class="btn btn-sm btn-warning">✏️ Edit</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center">No tests found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

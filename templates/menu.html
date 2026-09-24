@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="dashboard-hero">
+    <div class="hero-content">
+        <div class="hero-eyebrow">Diagnostic Clinic Dashboard</div>
+        <h2 class="hero-title">Patient Information System</h2>
+        <p class="hero-lead">Track patient profiles, capture lab requests, and keep every result organized in one place.</p>
+        <div class="hero-actions">
+            <a class="btn btn-accent" href="/patients/add">Register Patient</a>
+            <a class="btn btn-outline-accent" href="/add-order">New Lab Order</a>
+            <a class="btn btn-outline-accent" href="/patient-info">View Patient Records</a>
+        </div>
+    </div>
+    <div class="hero-panel">
+        <div class="panel-item">Today at a glance <span>Update anytime</span></div>
+        <div class="panel-item">Quick actions <span>New intake, new tests</span></div>
+        <div class="panel-item">Records hub <span>See latest results</span></div>
+        <div class="panel-item">Workflow ready <span>Front desk to lab</span></div>
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <div class="section-head">
+        <h3 class="section-title">Core Records</h3>
+        <p class="section-note">Fast access to patient profiles and lab history.</p>
+    </div>
+    <div class="dashboard-grid">
+        <a class="dashboard-card" href="/patient-info">
+            <div class="card-icon">📋</div>
+            <h4 class="card-title">Patient Information</h4>
+            <p class="card-meta">Search, review, and update patient demographics.</p>
+            <div class="card-footer">Open records</div>
+        </a>
+        <a class="dashboard-card" href="/patients/add">
+            <div class="card-icon">➕</div>
+            <h4 class="card-title">Add Patient</h4>
+            <p class="card-meta">Start a new chart and capture intake details.</p>
+            <div class="card-footer">Register now</div>
+        </a>
+        <a class="dashboard-card" href="/add-order">
+            <div class="card-icon">🧪</div>
+            <h4 class="card-title">New Test Order</h4>
+            <p class="card-meta">Create lab requests and log results in one flow.</p>
+            <div class="card-footer">Create order</div>
+        </a>
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <div class="section-head">
+        <h3 class="section-title">Lab Results</h3>
+        <p class="section-note">Jump into the latest completed examinations.</p>
+    </div>
+    <div class="dashboard-grid">
+        <a class="dashboard-card" href="/cbc-records">
+            <div class="card-icon">🩸</div>
+            <h4 class="card-title">CBC Records</h4>
+            <p class="card-meta">Complete blood count history and trends.</p>
+            <div class="card-footer">Review CBC</div>
+        </a>
+        <a class="dashboard-card" href="/urinalysis-records">
+            <div class="card-icon">💧</div>
+            <h4 class="card-title">Urinalysis</h4>
+            <p class="card-meta">Urine analysis results for ongoing cases.</p>
+            <div class="card-footer">Review UA</div>
+        </a>
+        <a class="dashboard-card" href="/fecalysis-records">
+            <div class="card-icon">🔬</div>
+            <h4 class="card-title">Fecalysis</h4>
+            <p class="card-meta">Stool examination findings and notes.</p>
+            <div class="card-footer">Review FA</div>
+        </a>
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <div class="section-head">
+        <h3 class="section-title">Administration</h3>
+        <p class="section-note">Maintain test catalog and order details.</p>
+    </div>
+    <div class="dashboard-grid">
+        <a class="dashboard-card" href="/tests">
+            <div class="card-icon">🧾</div>
+            <h4 class="card-title">Test Catalog</h4>
+            <p class="card-meta">Edit test names, prices, and descriptions.</p>
+            <div class="card-footer">Manage tests</div>
+        </a>
+        <a class="dashboard-card" href="/orders">
+            <div class="card-icon">📦</div>
+            <h4 class="card-title">Test Orders</h4>
+            <p class="card-meta">Update order dates, status, and assignments.</p>
+            <div class="card-footer">Manage orders</div>
+        </a>
+    </div>
+</section>
+{% endblock %}

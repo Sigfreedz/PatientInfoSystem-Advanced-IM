@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Edit Patient: {{ patient.patient_id }}</h2>
+<form method="POST" class="card p-4 mt-3">
+    <div class="row g-3">
+        <div class="col-md-6"><label>Patient ID</label><input type="text" value="{{ patient.patient_id }}" class="form-control" disabled></div>
+        <div class="col-md-6"><label>First Name</label><input type="text" name="first_name" value="{{ patient.first_name }}" class="form-control" required></div>
+        <div class="col-md-6"><label>Last Name</label><input type="text" name="last_name" value="{{ patient.last_name }}" class="form-control" required></div>
+        <div class="col-md-3"><label>Age</label><input type="number" name="age" value="{{ patient.age }}" class="form-control" required></div>
+        <div class="col-md-3"><label>Sex</label>
+            <select name="sex" class="form-select" required>
+                <option value="M" {% if patient.sex == 'M' %}selected{% endif %}>Male</option>
+                <option value="F" {% if patient.sex == 'F' %}selected{% endif %}>Female</option>
+            </select>
+        </div>
+        <div class="col-12"><label>Address</label><input type="text" name="address" value="{{ patient.address }}" class="form-control" required></div>
+        <div class="col-12"><label>Contact</label><input type="text" name="contact" value="{{ patient.contact }}" class="form-control" required></div>
+    </div>
+    <button type="submit" class="btn btn-warning mt-3">Update Patient</button>
+    <a href="/patients" class="btn btn-secondary mt-3">Cancel</a>
+</form>
+{% endblock %}

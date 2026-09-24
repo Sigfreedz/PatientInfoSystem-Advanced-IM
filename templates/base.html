@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Clinic - Patient Information System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1f2933;
+            --muted: #5a6b7b;
+            --accent: #0f766e;
+            --accent-strong: #0b5f58;
+            --accent-warm: #f59e0b;
+            --surface: #ffffff;
+            --surface-muted: #f4f7f8;
+            --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.08);
+            --shadow-strong: 0 18px 40px rgba(15, 23, 42, 0.16);
+            --radius-lg: 18px;
+            --radius-md: 14px;
+        }
+        body {
+            background: radial-gradient(circle at 10% 20%, rgba(15, 118, 110, 0.08), transparent 45%),
+                        radial-gradient(circle at 90% 10%, rgba(245, 158, 11, 0.12), transparent 40%),
+                        #f6f8f9;
+            color: var(--ink);
+            font-family: "Space Grotesk", "Trebuchet MS", "Segoe UI", sans-serif;
+        }
+        .clinic-header {
+            background: linear-gradient(135deg, #0f766e 0%, #1f9d8c 45%, #f59e0b 120%);
+            color: white;
+            padding: 24px 28px;
+            text-align: left;
+            margin: 20px 0 24px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+        }
+        .clinic-header h1 {
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+        .clinic-header h3 {
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .menu-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .menu-card h3 { color: #667eea; margin-bottom: 10px; }
+        .table-custom {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .table-custom thead {
+            background: #667eea;
+            color: white;
+        }
+        .result-card {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .result-header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .home-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .dashboard-hero {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+        .dashboard-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(15, 118, 110, 0.08), transparent 55%);
+            pointer-events: none;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        .hero-eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        .hero-title {
+            font-size: clamp(2rem, 3vw, 2.6rem);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .hero-lead {
+            color: var(--muted);
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-weight: 600;
+            border-radius: 999px;
+        }
+        .btn-accent:hover {
+            background: var(--accent-strong);
+            color: white;
+        }
+        .btn-outline-accent {
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 8px 18px;
+            font-weight: 600;
+            border-radius: 999px;
+        }
+        .btn-outline-accent:hover {
+            background: rgba(15, 118, 110, 0.1);
+            color: var(--accent);
+        }
+        .hero-panel {
+            position: relative;
+            z-index: 1;
+            background: var(--surface-muted);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            display: grid;
+            gap: 14px;
+            align-content: start;
+        }
+        .panel-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+        .panel-item span {
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .dashboard-section {
+            margin-top: 32px;
+        }
+        .section-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        .section-note {
+            margin: 0;
+            color: var(--muted);
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+        .dashboard-card {
+            text-decoration: none;
+            color: inherit;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-strong);
+            border-color: rgba(15, 118, 110, 0.25);
+        }
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(15, 118, 110, 0.12);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        .card-title {
+            font-weight: 700;
+            margin: 0;
+        }
+        .card-meta {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        .card-footer {
+            margin-top: auto;
+            font-weight: 600;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="clinic-header">
+            <h1>🏥 DIAGNOSTIC CLINIC</h1>
+            <h3>Patient Information System</h3>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+        
+        <a href="/" class="btn btn-primary btn-lg home-btn">🏠 HOME</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

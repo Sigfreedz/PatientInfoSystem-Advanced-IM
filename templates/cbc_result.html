@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <div class="result-header">
+            <h2>🏥 DIAGNOSTIC CLINIC</h2>
+            <h4>COMPLETE BLOOD COUNT (CBC) REPORT/RESULTS</h4>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <strong>PATIENT ID:</strong> {{ result.patient_id }}<br>
+                <strong>NAME:</strong> {{ result.first_name }} {{ result.last_name }}
+            </div>
+            <div class="col-md-6">
+                <strong>AGE:</strong> {{ result.age }}<br>
+                <strong>DATE OF TEST:</strong> {{ result.order_date.strftime('%m/%d/%Y') }}
+            </div>
+        </div>
+        
+        <table class="table table-bordered">
+            <tr>
+                <td><strong>WBC:</strong></td><td>{{ result.wbc }}</td>
+                <td><strong>MCH:</strong></td><td>{{ result.mch }}</td>
+            </tr>
+            <tr>
+                <td><strong>RBC:</strong></td><td>{{ result.rbc }}</td>
+                <td><strong>NEUTROPHILS:</strong></td><td>{{ result.neutrophils }}%</td>
+            </tr>
+            <tr>
+                <td><strong>Hb:</strong></td><td>{{ result.hemoglobin }} g/dL</td>
+                <td><strong>LYMPHOCYTES:</strong></td><td>{{ result.lymphocytes }}%</td>
+            </tr>
+            <tr>
+                <td><strong>HCT:</strong></td><td>{{ result.hematocrit }}%</td>
+                <td><strong>MONOCYTES:</strong></td><td>{{ result.monocytes }}%</td>
+            </tr>
+            <tr>
+                <td><strong>PLT:</strong></td><td>{{ result.platelets }}</td>
+                <td><strong>EOSINOPHILS:</strong></td><td>{{ result.eosinophils }}%</td>
+            </tr>
+            <tr>
+                <td><strong>MCV:</strong></td><td>{{ result.mcv }}</td>
+                <td><strong>BASOPHILS:</strong></td><td>{{ result.basophils }}%</td>
+            </tr>
+        </table>
+        
+        <div class="text-center mt-4">
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Print Report</button>
+            <a href="/cbc-records" class="btn btn-secondary">← Back to Records</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

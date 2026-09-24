@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <h2 class="text-center mb-4">📝 Add New Test Order</h2>
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Select Patient</label>
+                    <select name="patient_id" class="form-select" required>
+                        <option value="">-- Choose Patient --</option>
+                        {% for p in patients %}
+                        <option value="{{ p.patient_id }}">{{ p.patient_id }} - {{ p.full_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Test Type</label>
+                    <select name="test_id" class="form-select" required>
+                        <option value="">-- Choose Test --</option>
+                        {% for t in tests %}
+                        <option value="{{ t.test_id }}">{{ t.test_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Date of Test</label>
+                    <input type="date" name="order_date" class="form-control" required>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Next: Enter Results →</button>
+                <a href="/patient-info" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

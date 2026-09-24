@@ -1,0 +1,15 @@
+{
+  "mysqlOptions": {
+    "authProtocol": "default",
+    "enableSsl": "Disabled"
+  },
+  "ssh": "Disabled",
+  "previewLimit": 50,
+  "server": "localhost",
+  "port": 3306,
+  "driver": "MySQL",
+  "name": "MySQL local",
+  "username": "root",
+  "database": "barrera",
+  "password": "remrem0415"
+}

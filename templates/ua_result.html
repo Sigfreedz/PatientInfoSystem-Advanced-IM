@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <div class="result-header">
+            <h2>🏥 DIAGNOSTIC CLINIC</h2>
+            <h4>URINALYSIS REPORT/RESULTS</h4>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <strong>PATIENT ID:</strong> {{ result.patient_id }}<br>
+                <strong>NAME:</strong> {{ result.first_name }} {{ result.last_name }}
+            </div>
+            <div class="col-md-6">
+                <strong>AGE:</strong> {{ result.age }}<br>
+                <strong>DATE OF TEST:</strong> {{ result.order_date.strftime('%m/%d/%Y') }}
+            </div>
+        </div>
+        
+        <table class="table table-bordered">
+            <tr>
+                <td><strong>APPEARANCE:</strong></td><td>{{ result.appearance }}</td>
+                <td><strong>pH:</strong></td><td>{{ result.ph }}</td>
+            </tr>
+            <tr>
+                <td><strong>COLOR:</strong></td><td>{{ result.color }}</td>
+                <td><strong>KETONES:</strong></td><td>{{ result.ketones }}</td>
+            </tr>
+            <tr>
+                <td><strong>PROTEIN:</strong></td><td>{{ result.protein }}</td>
+                <td><strong>NITRITES:</strong></td><td>{{ result.nitrites }}</td>
+            </tr>
+            <tr>
+                <td><strong>SPEC. GRAV:</strong></td><td>{{ result.specific_gravity }}</td>
+                <td><strong>OTHER FINDINGS:</strong></td><td>{{ result.other_findings }}</td>
+            </tr>
+        </table>
+        
+        <div class="text-center mt-4">
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Print Report</button>
+            <a href="/urinalysis-records" class="btn btn-secondary">← Back to Records</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

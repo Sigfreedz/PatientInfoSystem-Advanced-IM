@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <div class="result-header">
+            <h2>🏥 DIAGNOSTIC CLINIC</h2>
+            <h4>BILLING / RECEIPT</h4>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <strong>Patient ID:</strong> {{ patient.patient_id }}<br>
+                <strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }}
+            </div>
+            <div class="col-md-6 text-end">
+                <strong>Date:</strong> {{ current_date.strftime('%m/%d/%Y') }}
+            </div>
+        </div>
+        
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Test</th>
+                    <th class="text-end">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.test_name }}</td>
+                    <td class="text-end">₱{{ "%.2f"|format(order.price) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="table-dark">
+                    <td><strong>TOTAL</strong></td>
+                    <td class="text-end"><strong>₱{{ "%.2f"|format(total) }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div class="text-center mt-4">
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Print Receipt</button>
+            <a href="/patient-info" class="btn btn-secondary">← Back to Patients</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

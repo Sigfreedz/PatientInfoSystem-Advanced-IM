@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <h2 class="text-center mb-4">➕ ADD NEW PATIENT</h2>
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Patient ID</label>
+                    <input type="text" name="patient_id" class="form-control" placeholder="PAT-XXX" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">First Name</label>
+                    <input type="text" name="first_name" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" name="last_name" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Age</label>
+                    <input type="number" name="age" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Sex</label>
+                    <select name="sex" class="form-select" required>
+                        <option value="">Select</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Address</label>
+                    <input type="text" name="address" class="form-control" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Contact</label>
+                    <input type="text" name="contact" class="form-control" required>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success btn-lg">💾 Save Patient</button>
+                <a href="/patient-info" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,3 +1,6 @@
+-- LEGACY ARCHIVE: This dump uses deprecated table names (patients/test_orders/etc.).
+-- For current implementation use database/renamed_schema.sql and db_context.md.
+
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/

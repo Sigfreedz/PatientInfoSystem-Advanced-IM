@@ -1,56 +1,31 @@
-CREATE TABLE patients (
-    patient_id VARCHAR(10) PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    age INT NOT NULL CHECK (age >= 0),
-    sex CHAR(1) NOT NULL CHECK (sex IN ('M', 'F')),
-    address VARCHAR(150),
-    contact VARCHAR(20) UNIQUE,
-    registered_at DATETIME DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+-- =====================================================
+-- CLEAN SQL BUNDLE (LIVE SCHEMA ONLY)
+-- =====================================================
+-- Run in this order from MySQL client:
+--   SOURCE database/renamed_schema.sql;
+--   SOURCE database/new_seed.sql;
+--   SOURCE database/rolve_views.sql;
+--   SOURCE database/encryption.sql;
+--   SOURCE database/app_auth.sql;
+--   SOURCE database/role_priveleges.sql;
+--   SOURCE database/transaction_demo.sql;
+--   SOURCE database/optimization_demo.sql;
+--
+-- Smoke checks (all live object names):
 
-CREATE TABLE test_catalog (
-    test_id INT AUTO_INCREMENT PRIMARY KEY,
-    test_name VARCHAR(50) NOT NULL UNIQUE,
-    price DECIMAL(10,2) NOT NULL CHECK (price > 0),
-    description VARCHAR(100)
-) ENGINE=InnoDB;
+USE `patient_db`;
 
-CREATE TABLE test_orders (
-    order_id INT AUTO_INCREMENT PRIMARY KEY,
-    patient_id VARCHAR(10) NOT NULL,
-    test_id INT NOT NULL,
-    order_date DATE NOT NULL,
-    status ENUM('PENDING','COMPLETED','CANCELLED') DEFAULT 'COMPLETED',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_order_patient FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE,
-    CONSTRAINT fk_order_test FOREIGN KEY (test_id) REFERENCES test_catalog(test_id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+SELECT COUNT(*) AS patient_count FROM clinic_patients;
+SELECT COUNT(*) AS order_count FROM lab_test;
+SELECT COUNT(*) AS payment_count FROM payments;
 
-CREATE TABLE cbc_results (
-    cbc_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL UNIQUE,
-    wbc DECIMAL(5,2), rbc DECIMAL(5,2), hemoglobin DECIMAL(5,2),
-    hematocrit DECIMAL(5,2), platelets INT, mcv INT, mch INT,
-    neutrophils DECIMAL(5,2), lymphocytes DECIMAL(5,2),
-    monocytes DECIMAL(5,2), eosinophils DECIMAL(5,2), basophils DECIMAL(5,2),
-    CONSTRAINT fk_cbc_order FOREIGN KEY (order_id) REFERENCES test_orders(order_id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+SELECT * FROM v_frontdesk_dashboard LIMIT 5;
+SELECT * FROM v_labtech_workspace LIMIT 5;
+SELECT * FROM v_doctor_clinical_view LIMIT 5;
 
-CREATE TABLE urinalysis_results (
-    ua_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL UNIQUE,
-    appearance VARCHAR(50), color VARCHAR(50), ph DECIMAL(3,1),
-    specific_gravity DECIMAL(4,3), glucose VARCHAR(20), protein VARCHAR(20),
-    ketones VARCHAR(20), nitrites VARCHAR(20), other_findings VARCHAR(100),
-    CONSTRAINT fk_ua_order FOREIGN KEY (order_id) REFERENCES test_orders(order_id) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
-CREATE TABLE fecalysis_results (
-    fa_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL UNIQUE,
-    appearance VARCHAR(50), consistency VARCHAR(50), occult_blood VARCHAR(20),
-    parasite_id VARCHAR(50), wbc VARCHAR(20), rbc VARCHAR(20),
-    bacteria VARCHAR(20), other_findings VARCHAR(100),
-    CONSTRAINT fk_fa_order FOREIGN KEY (order_id) REFERENCES test_orders(order_id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+-- Example live joins used by the app:
+SELECT o.order_id, o.patient_id, t.test_name, t.price, o.status
+FROM lab_test o
+JOIN lab_test_catalog t ON t.test_id = o.test_id
+ORDER BY o.order_date DESC, o.order_id DESC
+LIMIT 10;

@@ -22,6 +22,19 @@ Diagnostic clinic database and Flask CRUD interface.
 
 The application targets `patient_db`. It uses `clinic_patients`, `lab_test_catalog`, `lab_test`, `cbc`, `urinalysis`, `fecalysis`, and `payments`; the legacy names `patients`, `test_orders`, and `test_catalog` are not supported.
 
+## Demo/Defense SQL Artifacts
+
+- `sample.sql` — clean run bundle using live schema names only
+- `database/transaction_demo.sql` — ACID + COMMIT/ROLLBACK + `FOR UPDATE` consistency demonstration
+- `database/optimization_demo.sql` — baseline and post-index `EXPLAIN`/`EXPLAIN ANALYZE` flow for heavy app queries
+- `database/role_priveleges.sql` — least-privilege GRANT/REVOKE matrix and deny-proof checks
+- `database/encryption.sql` — AES-256-CBC encryption/decryption and token-hash lookup proof
+
+## Legacy Archive Note
+
+- `database/schema.sql` is retained only as a legacy archive dump with old names.
+- Use `database/renamed_schema.sql` and `db_context.md` as the current source of truth.
+
 ## Environment
 
 Required for a deployed configuration:

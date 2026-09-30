@@ -2,12 +2,12 @@
 
 ## Source of Truth
 
-This context was generated from the live MySQL database through DBCode on 2026-09-29. Treat the live database metadata below as authoritative over older SQL dumps in `database/`.
+This context was generated from the live MySQL database through DBCode on 2026-09-30. Treat the live database metadata below as authoritative over older SQL dumps in `database/`.
 
 - Connection: `clinic`
 - Database: `patient_db`
 - Base tables verified: `cbc`, `clinic_patients`, `fecalysis`, `lab_test`, `lab_test_catalog`, `payments`, `urinalysis`
-- Views verified: `v_admin_audit_log`, `v_doctor_clinical_view`, `v_frontdesk_dashboard`, `v_labtech_workspace`, `v_patient_portal`
+- Views verified: `v_admin_audit_log`, `v_doctor_clinical_view`, `v_frontdesk_dashboard`, `v_labtech_workspace`, `v_patient_portal`, `v_patients_decrypted`, `v_payments_decrypted`
 - Storage engine: InnoDB
 - Table character set: utf8mb4
 - Table collation: utf8mb4_0900_ai_ci
@@ -236,4 +236,4 @@ The live schema also includes `payments`, which is not currently used by the Fla
 - `cbc`, `urinalysis`, and `fecalysis` use one-to-one result relationships with `lab_test` through unique `order_id` values.
 - `payments` uses a many-to-one relationship with `lab_test`; `ON DELETE CASCADE` and `ON UPDATE CASCADE` apply through `fk_payments_order`.
 - The payment amount check constraint is `chk_payment_positive` (`amount_paid` > 0).
-- DBCode reported the current row counts listed above. The five views are metadata objects and do not have persisted row-count metadata.
+- DBCode reported the current row counts listed above. The seven views are metadata objects and do not have persisted row-count metadata.

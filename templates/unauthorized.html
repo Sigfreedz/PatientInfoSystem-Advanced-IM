@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card text-center">
+        <h2>Access denied</h2>
+        <p class="text-muted">Your account does not have permission to open this page.</p>
+        <a class="btn btn-primary" href="{{ url_for('menu') }}">Return to dashboard</a>
+    </div>
+</div>
+{% endblock %}

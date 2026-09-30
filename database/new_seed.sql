@@ -164,3 +164,14 @@ SELECT * FROM `lab_test`;
 SELECT * FROM `cbc`;
 SELECT * FROM `urinalysis`;
 SELECT * FROM `fecalysis`;
+
+USE patient_db;
+
+SET @@block_encryption_mode = 'aes-256-cbc';
+SET @secret_key = 'ClinicSecretEncryptionKey2026!';
+
+SELECT *
+FROM v_patients_decrypted;
+
+SELECT *
+FROM v_payments_decrypted;

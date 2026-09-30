@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <h2>My Completed Laboratory Orders</h2>
+        {% if orders %}
+        <table class="table table-bordered mt-3">
+            <thead><tr><th>Order date</th><th>Test</th><th>Status</th></tr></thead>
+            <tbody>{% for order in orders %}<tr><td>{{ order.order_date }}</td><td>{{ order.test_name }}</td><td>{{ order.status }}</td></tr>{% endfor %}</tbody>
+        </table>
+        {% else %}<p class="text-muted">No completed orders are available.</p>{% endif %}
+    </div>
+</div>
+{% endblock %}

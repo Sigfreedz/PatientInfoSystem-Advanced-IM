@@ -259,6 +259,26 @@
             <h1>🏥 DIAGNOSTIC CLINIC</h1>
             <h3>Patient Information System</h3>
         </div>
+
+        {% if current_user %}
+        <nav class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Signed in as {{ current_user.username }} · {{ role_names[current_user.role_name] }}</span>
+            <div class="d-flex gap-2">
+                {% if current_user.role_name == 'role_admin' %}
+                <a class="btn btn-outline-dark btn-sm" href="{{ url_for('admin_users') }}">Manage users</a>
+                <a class="btn btn-outline-dark btn-sm" href="{{ url_for('admin_roles') }}">Manage roles</a>
+                <a class="btn btn-outline-dark btn-sm" href="{{ url_for('encrypted_records') }}">Decrypted records</a>
+                {% endif %}
+                {% if current_user.role_name == 'role_patient' %}
+                <a class="btn btn-outline-dark btn-sm" href="{{ url_for('patient_portal') }}">My portal</a>
+                {% endif %}
+                <form method="POST" action="{{ url_for('logout') }}" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-outline-danger btn-sm" type="submit">Sign out</button>
+                </form>
+            </div>
+        </nav>
+        {% endif %}
         
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}

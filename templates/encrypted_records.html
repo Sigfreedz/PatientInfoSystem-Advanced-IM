@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <h2>Decrypted Sensitive Records</h2>
+        <p class="text-muted">Administrator-only view. Values are decrypted by the application query using PATIENT_ENCRYPTION_KEY.</p>
+        <h3 class="mt-4">Patient contacts</h3>
+        <div class="table-responsive"><table class="table table-bordered"><thead><tr><th>Patient</th><th>Name</th><th>Contact</th></tr></thead><tbody>{% for patient in patients %}<tr><td>{{ patient.patient_id }}</td><td>{{ patient.first_name }} {{ patient.last_name }}</td><td>{{ patient.contact or '' }}</td></tr>{% else %}<tr><td colspan="3">No patients found.</td></tr>{% endfor %}</tbody></table></div>
+        <h3 class="mt-4">Payment receipts</h3>
+        <div class="table-responsive"><table class="table table-bordered"><thead><tr><th>Payment</th><th>Order</th><th>Amount</th><th>Receipt</th><th>Status</th></tr></thead><tbody>{% for payment in payments %}<tr><td>#{{ payment.payment_id }}</td><td>#{{ payment.order_id }}</td><td>₱{{ "%.2f"|format(payment.amount_paid) }}</td><td>{{ payment.receipt_number or '' }}</td><td>{{ payment.status }}</td></tr>{% else %}<tr><td colspan="5">No payments found.</td></tr>{% endfor %}</tbody></table></div>
+    </div>
+</div>
+{% endblock %}

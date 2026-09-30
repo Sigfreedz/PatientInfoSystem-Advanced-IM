@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Payment Records</h2>
+        <a href="{{ url_for('patients') }}" class="btn btn-success">Process payment</a>
+    </div>
+    <div class="table-responsive table-custom">
+        <table class="table table-striped mb-0">
+            <thead>
+                <tr><th>Date</th><th>Order</th><th>Patient</th><th>Test</th><th>Amount</th><th>Method</th><th>Status</th><th>Receipt</th><th>Actions</th></tr>
+            </thead>
+                <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.payment_date }}</td>
+                    <td><a href="{{ url_for('payments', order_id=payment.order_id) }}">#{{ payment.order_id }}</a></td>
+                    <td>{{ payment.patient_id }} - {{ payment.patient_name }}</td>
+                    <td>{{ payment.test_name }}</td>
+                    <td>₱{{ "%.2f"|format(payment.amount_paid) }}</td>
+                    <td>{{ payment.payment_method }}</td>
+                    <td>{{ payment.status }}</td>
+                    <td>{{ payment.receipt_number or '' }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_payment', payment_id=payment.payment_id) }}" class="btn btn-sm btn-warning">✏️ Edit</a>
+                        {% if current_user.role_name == 'role_admin' %}
+                        <form action="{{ url_for('delete_payment', payment_id=payment.payment_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this payment record?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}<tr><td colspan="9" class="text-center">No payments recorded.</td></tr>{% endfor %}
+                </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

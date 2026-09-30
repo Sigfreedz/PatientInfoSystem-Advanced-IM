@@ -7,6 +7,7 @@
             <p class="text-muted mb-0">Order ID: #{{ result.order_id }} | {{ result.patient_id }} - {{ result.name }} | {{ result.order_date.strftime('%Y-%m-%d') }}</p>
         </div>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="row g-3">
                 <div class="col-md-3"><label>WBC</label><input type="number" step="0.01" name="wbc" value="{{ result.wbc }}" class="form-control" required></div>
                 <div class="col-md-3"><label>RBC</label><input type="number" step="0.01" name="rbc" value="{{ result.rbc }}" class="form-control" required></div>

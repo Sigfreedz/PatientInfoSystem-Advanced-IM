@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <h2>Payments for Order #{{ order.order_id }}</h2>
+        <p class="text-muted">{{ order.patient_id }} · {{ order.test_name }} · ₱{{ "%.2f"|format(order.price) }}</p>
+        <form method="POST" class="row g-3 mb-4">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="col-md-3"><label class="form-label">Amount</label><input class="form-control" name="amount_paid" type="number" min="0.01" step="0.01" required></div>
+            <div class="col-md-3"><label class="form-label">Method</label><select class="form-select" name="payment_method"><option>CASH</option><option>CARD</option><option>GCASH</option><option>INSURANCE</option></select></div>
+            <div class="col-md-3"><label class="form-label">Status</label><select class="form-select" name="status"><option>PAID</option><option>PARTIAL</option><option>REFUNDED</option></select></div>
+            <div class="col-md-3"><label class="form-label">Receipt</label><input class="form-control" name="receipt_number"></div>
+            <div class="col-12"><button class="btn btn-primary" type="submit">Record payment</button></div>
+        </form>
+        <table class="table table-bordered">
+            <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th><th>Receipt</th></tr></thead>
+            <tbody>{% for payment in payments %}<tr><td>{{ payment.payment_date }}</td><td>₱{{ "%.2f"|format(payment.amount_paid) }}</td><td>{{ payment.payment_method }}</td><td>{{ payment.status }}</td><td>{{ payment.receipt_number or '' }}</td></tr>{% else %}<tr><td colspan="5">No payments recorded.</td></tr>{% endfor %}</tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

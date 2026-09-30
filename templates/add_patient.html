@@ -4,10 +4,12 @@
     <div class="result-card">
         <h2 class="text-center mb-4">➕ ADD NEW PATIENT</h2>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label">Patient ID</label>
-                    <input type="text" name="patient_id" class="form-control" placeholder="PAT-XXX" required>
+                    <label class="form-label">Assigned Patient ID</label>
+                    <input type="text" value="{{ next_patient_id }}" class="form-control" readonly>
+                    <div class="form-text">The lowest available PAT-### ID is assigned automatically.</div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">First Name</label>

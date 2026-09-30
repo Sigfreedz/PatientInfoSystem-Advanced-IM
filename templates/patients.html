@@ -21,6 +21,7 @@
                 <td>
                     <a href="/patients/edit/{{ p.patient_id }}" class="btn btn-sm btn-warning">Edit</a>
                     <form action="/patients/delete/{{ p.patient_id }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this patient? Related orders/results will also be removed.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                     </form>
                 </td>

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <h2 class="mb-3">Database Role Management</h2>
+        <p class="text-muted">Grant or revoke only the predefined MySQL roles. The database administrator connection performs the change.</p>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead><tr><th>Application user</th><th>App role</th><th>Patient ID</th><th>MySQL account</th><th>Change role</th></tr></thead>
+                <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ role_names[user.role_name] }}</td>
+                    <td>{{ user.patient_id or 'Staff account' }}</td>
+                    <td>{{ user.mysql_username }}</td>
+                    <td>
+                        <form method="POST" class="d-flex gap-2">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="username" value="{{ user.mysql_username }}">
+                            <select name="role_name" class="form-select form-select-sm" required>
+                                {% for role in roles %}<option value="{{ role }}" {% if role == user.role_name %}selected{% endif %}>{{ role_names[role] }}</option>{% endfor %}
+                            </select>
+                            <button class="btn btn-success btn-sm" name="action" value="grant" type="submit">Grant</button>
+                            <button class="btn btn-outline-danger btn-sm" name="action" value="revoke" type="submit">Revoke</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

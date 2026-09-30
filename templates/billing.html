@@ -22,6 +22,9 @@
                 <tr>
                     <th>Test</th>
                     <th class="text-end">Amount</th>
+                    <th class="text-end">Paid</th>
+                    <th class="text-end">Balance</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +32,9 @@
                 <tr>
                     <td>{{ order.test_name }}</td>
                     <td class="text-end">₱{{ "%.2f"|format(order.price) }}</td>
+                    <td class="text-end">₱{{ "%.2f"|format(order.paid) }}</td>
+                    <td class="text-end">₱{{ "%.2f"|format(order.balance) }}</td>
+                    <td><a href="{{ url_for('payments', order_id=order.order_id) }}" class="btn btn-sm btn-success">Process payment</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -36,6 +42,9 @@
                 <tr class="table-dark">
                     <td><strong>TOTAL</strong></td>
                     <td class="text-end"><strong>₱{{ "%.2f"|format(total) }}</strong></td>
+                    <td class="text-end"><strong>₱{{ "%.2f"|format(paid) }}</strong></td>
+                    <td class="text-end"><strong>₱{{ "%.2f"|format(balance) }}</strong></td>
+                    <td></td>
                 </tr>
             </tfoot>
         </table>

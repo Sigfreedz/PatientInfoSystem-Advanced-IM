@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <h2 class="text-center mb-4">Edit Payment #{{ payment.payment_id }}</h2>
+        <p class="text-center text-muted">{{ payment.patient_id }} - {{ payment.patient_name }} · Order #{{ payment.order_id }} · {{ payment.test_name }}</p>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Amount</label>
+                    <input class="form-control" name="amount_paid" type="number" min="0.01" step="0.01" value="{{ payment.amount_paid }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Method</label>
+                    <select class="form-select" name="payment_method">
+                        {% for method in ['CASH', 'CARD', 'GCASH', 'INSURANCE'] %}
+                        <option value="{{ method }}" {% if payment.payment_method == method %}selected{% endif %}>{{ method }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status">
+                        {% for status in ['PAID', 'PARTIAL', 'REFUNDED'] %}
+                        <option value="{{ status }}" {% if payment.status == status %}selected{% endif %}>{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Receipt</label>
+                    <input class="form-control" name="receipt_number" value="{{ payment.receipt_number or '' }}">
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-warning btn-lg">Update Payment</button>
+                <a href="{{ url_for('payment_records') }}" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

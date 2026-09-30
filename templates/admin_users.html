@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="result-card">
+        <h2>Users and Roles</h2>
+        <form method="POST" class="row g-3 mb-4">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="col-md-3"><label class="form-label">App username</label><input name="username" class="form-control" required></div>
+            <div class="col-md-3"><label class="form-label">MySQL username</label><input name="mysql_username" class="form-control" placeholder="Optional"></div>
+            <div class="col-md-3"><label class="form-label">Initial password</label><input name="password" type="password" class="form-control" minlength="12" required></div>
+            <div class="col-md-3"><label class="form-label">Role</label><select name="role_name" class="form-select" required>{% for role in roles %}<option value="{{ role }}">{{ role_names[role] }}</option>{% endfor %}</select></div>
+            <div class="col-md-3"><label class="form-label">Patient ID</label><input name="patient_id" class="form-control" placeholder="Required for patients"></div>
+            <div class="col-12"><button class="btn btn-primary" type="submit">Create user</button></div>
+        </form>
+        <table class="table table-bordered"><thead><tr><th>Username</th><th>Role</th><th>Patient ID</th><th>MySQL account</th><th>Status</th><th>Action</th></tr></thead><tbody>{% for user in users %}<tr><td>{{ user.username }}</td><td>{{ role_names[user.role_name] }}</td><td>{{ user.patient_id or '' }}</td><td>{{ user.mysql_username }}</td><td>{{ 'Active' if user.is_active else 'Inactive' }}</td><td><form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="is_active" value="{{ 0 if user.is_active else 1 }}"><button class="btn btn-sm {{ 'btn-outline-danger' if user.is_active else 'btn-outline-success' }}" formaction="{{ url_for('update_user_status', user_id=user.user_id) }}" type="submit">{{ 'Deactivate' if user.is_active else 'Reactivate' }}</button></form></td></tr>{% endfor %}</tbody></table>
+    </div>
+</div>
+{% endblock %}

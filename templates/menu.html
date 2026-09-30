@@ -43,6 +43,14 @@
             <p class="card-meta">Create lab requests and log results in one flow.</p>
             <div class="card-footer">Create order</div>
         </a>
+        {% if current_user.role_name in ['role_admin', 'role_front_desk'] %}
+        <a class="dashboard-card" href="{{ url_for('payment_records') }}">
+            <div class="card-icon">💳</div>
+            <h4 class="card-title">Payment Records</h4>
+            <p class="card-meta">Review payments, receipts, methods, and statuses.</p>
+            <div class="card-footer">View payments</div>
+        </a>
+        {% endif %}
     </div>
 </section>
 

@@ -4,6 +4,7 @@
     <div class="result-card">
         <h2 class="text-center mb-4">📝 Add New Test Order</h2>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Select Patient</label>

@@ -9,6 +9,7 @@
         </div>
 
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             {% if test_type == 'CBC' %}
             <div class="row g-3">
                 <div class="col-md-3"><label>WBC</label><input type="number" step="0.01" name="wbc" class="form-control" required></div>

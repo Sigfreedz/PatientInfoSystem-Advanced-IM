@@ -7,20 +7,64 @@ Diagnostic clinic database and Flask CRUD interface.
 - **Version Control:** GitHub
 
 ## 📥 Setup Instructions
-1. Install [XAMPP](https://www.apachefriends.org/) or MySQL 8.0, then start MySQL.
-2. Apply `database/renamed_schema.sql`, seed the current tables, and apply `database/rolve_views.sql` and `database/encryption.sql`.
-3. Apply `database/app_auth.sql`. The live `patient_db` connection already has this table created by DBCode.
-4. Create a least-privilege MySQL account for normal application traffic and a separate account with role-management privileges for the admin dashboard.
-5. Copy `.env.example` to `.env` or set the variables in the process environment.
-6. Generate a password hash without storing the plaintext password:
+### 1) Install prerequisites
+1. Install [Python 3.10+](https://www.python.org/downloads/).
+2. Install [XAMPP](https://www.apachefriends.org/) (or any MySQL 8.0 server).
+3. Start the MySQL service.
 
-	```text
-	python -c "from getpass import getpass; from werkzeug.security import generate_password_hash; print(generate_password_hash(getpass()))"
-	```
+### 2) Prepare the Python environment
+1. Open a terminal in the project root.
+2. Create a virtual environment:
+   ```bash
+   python -m venv .venv
+   ```
+3. Activate it:
+   - Windows (PowerShell): `.\.venv\Scripts\Activate.ps1`
+   - macOS/Linux: `source .venv/bin/activate`
+4. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-7. Insert the generated hash into `app_users` with `role_admin`, then start the Flask application.
+### 3) Create and initialize the database
+1. Create a database named `patient_db`.
+2. Apply the SQL files in this order:
+   1. `database/renamed_schema.sql`
+   2. Seed/insert your table data (from your dataset)
+   3. `database/rolve_views.sql`
+   4. `database/encryption.sql`
+   5. `database/app_auth.sql`
+3. Confirm the expected table names exist: `clinic_patients`, `lab_test_catalog`, `lab_test`, `cbc`, `urinalysis`, `fecalysis`, `payments`, and `app_users`.
 
-The application targets `patient_db`. It uses `clinic_patients`, `lab_test_catalog`, `lab_test`, `cbc`, `urinalysis`, `fecalysis`, and `payments`; the legacy names `patients`, `test_orders`, and `test_catalog` are not supported.
+### 4) Create MySQL users with correct permissions
+1. Create one least-privilege account for regular app traffic (`DB_USER`).
+2. Create a separate account for admin-only grant/revoke actions (`DB_ADMIN_USER`).
+3. Grant only the minimum required privileges to each account.
+
+### 5) Configure environment variables
+1. Copy `.env.example` to `.env`.
+2. Update all values in `.env`, especially:
+   - `FLASK_SECRET_KEY`
+   - `PATIENT_ENCRYPTION_KEY`
+   - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
+   - `DB_ADMIN_USER`, `DB_ADMIN_PASSWORD`
+3. Set `FLASK_DEBUG=true` only for local development.
+
+### 6) Create the first admin app account
+1. Generate a password hash:
+   ```bash
+   python -c "from getpass import getpass; from werkzeug.security import generate_password_hash; print(generate_password_hash(getpass()))"
+   ```
+2. Insert a row into `app_users` using the generated hash and assign `role_admin`.
+
+### 7) Run the application
+1. Start Flask:
+   ```bash
+   python app.py
+   ```
+2. Open the app in your browser (default Flask URL is `http://127.0.0.1:5000`).
+
+The application targets `patient_db`. Legacy names `patients`, `test_orders`, and `test_catalog` are not supported.
 
 ## Environment
 

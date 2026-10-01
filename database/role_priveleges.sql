@@ -46,11 +46,11 @@ GRANT SELECT, UPDATE ON `patient_db`.`lab_test` TO 'role_lab_tech';
 -- Grant the filtered lab workspace view so technicians see work-relevant indicators without broad patient or payment access.
 GRANT SELECT ON `patient_db`.`v_labtech_workspace` TO 'role_lab_tech';
 
--- Doctors receive read-only clinical projections and demographics, with no write or payment privileges.
+-- Doctors receive clinical projections and can create or update lab orders, but have no payment privileges.
 GRANT SELECT ON `patient_db`.`v_doctor_clinical_view` TO 'role_doctor';
 -- Doctors need patient demographics for clinical context, but this is SELECT-only.
 GRANT SELECT ON `patient_db`.`clinic_patients` TO 'role_doctor';
-
+GRANT SELECT, INSERT, UPDATE ON `patient_db`.`lab_test` TO 'role_doctor';
 -- Patients receive only the portal projection; they get no base-table access.
 GRANT SELECT ON `patient_db`.`v_patient_portal` TO 'role_patient';
 
@@ -130,10 +130,15 @@ SHOW GRANTS FOR 'user_labtech'@'localhost';
 -- SELECT * FROM `patient_db`.`cbc`;
 -- Expected: ERROR 1142 DENIED. Rubric: front desk never receives clinical-result SELECT.
 
--- C) user_doctor: clinical reads are allowed; all writes and money access are denied.
+-- C) user_doctor: clinical reads and lab-order writes are allowed; money access is denied.
 -- SET ROLE ALL;
 -- SELECT * FROM `patient_db`.`v_doctor_clinical_view` WHERE `patient_id` = '<id>';
 -- Expected: ALLOWED. Rubric: doctor receives read-only clinical projection.
+-- INSERT INTO `patient_db`.`lab_test` (`patient_id`, `test_id`, `order_date`, `status`)
+-- VALUES ('<patient_id>', <test_id>, CURRENT_DATE, 'PENDING');
+-- Expected: ALLOWED. Rubric: doctor can create lab orders.
+-- UPDATE `patient_db`.`lab_test` SET `status` = 'COMPLETED' WHERE `order_id` = <id>;
+-- Expected: ALLOWED. Rubric: doctor can update lab orders.
 -- INSERT INTO `patient_db`.`payments` (`order_id`, `amount_paid`, `payment_method`)
 -- VALUES (<id>, 1.00, 'CASH');
 -- Expected: ERROR 1142 DENIED. Rubric: doctor has no money privilege.

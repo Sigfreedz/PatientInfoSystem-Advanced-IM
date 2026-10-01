@@ -43,6 +43,7 @@ ROLE_NAMES = {
     'role_patient': 'Patient',
 }
 IDENTIFIER_RE = re.compile(r'^[A-Za-z0-9_.-]{1,80}$')
+APP_USERNAME_RE = re.compile(r'^[^\s\x00-\x1f\x7f]{1,80}$')
 
 
 def get_db_connection(admin=False):
@@ -156,6 +157,17 @@ def safe_identifier(value):
     return value
 
 
+def safe_app_username(value):
+    if not value or not APP_USERNAME_RE.fullmatch(value):
+        raise ValueError('Username must be 1-80 characters without spaces or control characters.')
+    return value
+
+
+def default_mysql_username(app_username):
+    identifier = re.sub(r'[^A-Za-z0-9_.-]', '_', app_username)
+    return safe_identifier(identifier[:80])
+
+
 def next_patient_id(cursor):
     cursor.execute("SELECT patient_id FROM clinic_patients WHERE patient_id REGEXP '^PAT-[0-9]+$' FOR UPDATE")
     used_ids = set()
@@ -172,6 +184,8 @@ def next_patient_id(cursor):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if g.current_user is not None:
+        if g.current_user['role_name'] == 'role_patient':
+            return redirect(url_for('patient_portal'))
         return redirect(url_for('menu'))
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
@@ -187,6 +201,8 @@ def login():
             session.clear()
             session['user_id'] = user['user_id']
             csrf_token()
+            if user['role_name'] == 'role_patient':
+                return redirect(url_for('patient_portal'))
             next_url = request.args.get('next', '')
             if not next_url.startswith('/') or next_url.startswith('//'):
                 next_url = url_for('menu')
@@ -206,6 +222,8 @@ def logout():
 @app.route('/')
 @login_required
 def menu():
+    if g.current_user['role_name'] == 'role_patient':
+        return render_template('unauthorized.html'), 403
     return render_template('menu.html')
 
 
@@ -334,12 +352,50 @@ def patient_portal():
     try:
         with connection.cursor() as cursor:
             cursor.execute(
-                """SELECT patient_id, first_name, last_name, order_date, test_name, status
-                   FROM v_patient_portal WHERE patient_id=%s ORDER BY order_date DESC""",
+                """SELECT patient_id, first_name, last_name, age, sex, address,
+                          CONVERT(AES_DECRYPT(contact_encrypted, %s, encryption_iv) USING utf8mb4) AS contact
+                   FROM clinic_patients WHERE patient_id=%s""",
+                (require_encryption_key(), patient_id),
+            )
+            patient = cursor.fetchone()
+            if not patient:
+                return render_template('unauthorized.html'), 403
+            cursor.execute(
+                """SELECT o.order_id, o.order_date, o.status, t.test_name, t.price,
+                          COALESCE(SUM(CASE WHEN pay.status<>'REFUNDED' THEN pay.amount_paid ELSE 0 END), 0) AS paid,
+                          CASE
+                            WHEN t.test_name='CBC' THEN CONCAT('Hemoglobin: ', COALESCE(c.hemoglobin, 'Pending'), ', Platelets: ', COALESCE(c.platelets, 'Pending'))
+                            WHEN t.test_name='URINALYSIS' THEN CONCAT('Protein: ', COALESCE(u.protein, 'Pending'), ', pH: ', COALESCE(u.ph, 'Pending'))
+                            WHEN t.test_name='FECALYSIS' THEN CONCAT('Parasite: ', COALESCE(f.parasite_id, 'Pending'))
+                            ELSE 'Pending'
+                          END AS result_summary
+                   FROM lab_test o
+                   JOIN lab_test_catalog t ON o.test_id=t.test_id
+                   LEFT JOIN payments pay ON pay.order_id=o.order_id
+                   LEFT JOIN cbc c ON c.order_id=o.order_id
+                   LEFT JOIN urinalysis u ON u.order_id=o.order_id
+                   LEFT JOIN fecalysis f ON f.order_id=o.order_id
+                   WHERE o.patient_id=%s
+                   GROUP BY o.order_id, o.order_date, o.status, t.test_name, t.price,
+                            c.hemoglobin, c.platelets, u.protein, u.ph, f.parasite_id
+                   ORDER BY o.order_date DESC, o.order_id DESC""",
                 (patient_id,),
             )
             orders = cursor.fetchall()
-        return render_template('patient_portal.html', orders=orders)
+            cursor.execute(
+                """SELECT pay.payment_id, pay.order_id, pay.payment_date, pay.amount_paid,
+                          pay.payment_method, pay.status,
+                          CONVERT(AES_DECRYPT(pay.receipt_number_encrypted, %s, pay.encryption_iv) USING utf8mb4) AS receipt_number
+                   FROM payments pay
+                   JOIN lab_test o ON pay.order_id=o.order_id
+                   WHERE o.patient_id=%s
+                   ORDER BY pay.payment_date DESC, pay.payment_id DESC""",
+                (require_encryption_key(), patient_id),
+            )
+            payments = cursor.fetchall()
+        for order in orders:
+            order['balance'] = Decimal(order['price']) - Decimal(order['paid'])
+        return render_template('patient_portal.html', patient=patient, orders=orders, payments=payments)
     finally:
         close_connection(connection)
 
@@ -602,9 +658,11 @@ def edit_fecalysis(order_id):
 
 
 @app.route('/add-order', methods=['GET', 'POST'])
-@roles_required('role_admin', 'role_front_desk')
+@roles_required('role_admin', 'role_front_desk', 'role_doctor')
 def add_order():
     connection = get_db_connection()
+    patient_rows = []
+    tests = []
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT patient_id,CONCAT(first_name,' ',last_name) AS full_name FROM clinic_patients ORDER BY last_name,first_name")
@@ -617,10 +675,24 @@ def add_order():
                 order_id = cursor.lastrowid
                 cursor.execute('SELECT test_name FROM lab_test_catalog WHERE test_id=%s', (request.form.get('test_id'),))
                 test = cursor.fetchone()
-            connection.commit()
             if not test:
+                connection.rollback()
                 abort(400)
+            result_table = {'CBC': 'cbc', 'URINALYSIS': 'urinalysis', 'FECALYSIS': 'fecalysis'}.get(test['test_name'].upper())
+            if not result_table:
+                connection.rollback()
+                abort(400)
+            with connection.cursor() as cursor:
+                cursor.execute(f'INSERT INTO `{result_table}` (order_id) VALUES (%s)', (order_id,))
+            connection.commit()
+            if g.current_user['role_name'] == 'role_doctor':
+                flash(f'Test order #{order_id} created successfully.', 'success')
+                return redirect(url_for('menu'))
             return redirect(url_for('add_result', order_id=order_id, test_type=test['test_name']))
+        return render_template('add_order.html', patients=patient_rows, tests=tests)
+    except (pymysql.MySQLError, ValueError) as error:
+        connection.rollback()
+        flash(f'Unable to create test order: {error}', 'danger')
         return render_template('add_order.html', patients=patient_rows, tests=tests)
     finally:
         close_connection(connection)
@@ -646,9 +718,14 @@ def add_result(order_id, test_type):
                 if not cursor.fetchone():
                     abort(404)
                 columns = ', '.join(f'`{field}`' for field in fields)
-                placeholders = ', '.join(['%s'] * len(fields))
                 values = [request.form.get(field, '').strip() or None for field in fields]
-                cursor.execute(f'INSERT INTO `{table}` (order_id,{columns}) VALUES (%s,{placeholders})', [order_id] + values)
+                cursor.execute(f'SELECT order_id FROM `{table}` WHERE order_id=%s', (order_id,))
+                if cursor.fetchone():
+                    assignments = ', '.join(f'`{field}`=%s' for field in fields)
+                    cursor.execute(f'UPDATE `{table}` SET {assignments} WHERE order_id=%s', values + [order_id])
+                else:
+                    placeholders = ', '.join(['%s'] * len(fields))
+                    cursor.execute(f'INSERT INTO `{table}` (order_id,{columns}) VALUES (%s,{placeholders})', [order_id] + values)
                 cursor.execute("UPDATE lab_test SET status='COMPLETED' WHERE order_id=%s", (order_id,))
             connection.commit()
             flash('Lab results added successfully.', 'success')
@@ -693,7 +770,7 @@ def edit_test(test_id):
 
 
 @app.get('/orders')
-@roles_required('role_admin', 'role_front_desk', 'role_lab_tech')
+@roles_required('role_admin', 'role_front_desk', 'role_lab_tech', 'role_doctor')
 def manage_orders():
     connection = get_db_connection()
     try:
@@ -706,7 +783,7 @@ def manage_orders():
 
 
 @app.route('/orders/edit/<int:order_id>', methods=['GET', 'POST'])
-@roles_required('role_admin', 'role_front_desk')
+@roles_required('role_admin', 'role_front_desk','role_doctor')
 def edit_order(order_id):
     connection = get_db_connection()
     try:
@@ -735,8 +812,13 @@ def edit_order(order_id):
 @roles_required('role_admin')
 def admin_users():
     if request.method == 'POST':
-        username = safe_identifier(request.form.get('username', '').strip())
-        mysql_username = safe_identifier(request.form.get('mysql_username', '').strip() or username)
+        try:
+            username = safe_app_username(request.form.get('username', '').strip())
+            mysql_username_input = request.form.get('mysql_username', '').strip()
+            mysql_username = safe_identifier(mysql_username_input) if mysql_username_input else default_mysql_username(username)
+        except ValueError as error:
+            flash(str(error), 'danger')
+            return redirect(url_for('admin_users'))
         password = request.form.get('password', '')
         role_name = request.form.get('role_name', '')
         patient_id = request.form.get('patient_id', '').strip() or None

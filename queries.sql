@@ -218,3 +218,5 @@ WHERE patient_id = 'PAT-004'
       ORDER BY test_id
       LIMIT 1
   );
+
+SELECT * FROM cbc;

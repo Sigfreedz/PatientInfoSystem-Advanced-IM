@@ -181,3 +181,4 @@ CREATE TABLE `payments` (
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
   COMMENT = 'Cumulative payment validation SUM(amount_paid) <= lab_test.total_amount enforced at application layer';
+

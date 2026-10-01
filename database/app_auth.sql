@@ -25,3 +25,16 @@ CREATE TABLE IF NOT EXISTS `app_users` (
 -- Example only. Replace the hash and account values before use.
 -- INSERT INTO app_users (username, password_hash, role_name, mysql_username)
 -- VALUES ('admin', '<generated-password-hash>', 'role_admin', 'user_admin');
+
+-- Administrative account listing.
+-- password_hash is intentionally excluded because password hashes cannot be decrypted.
+SELECT user_id,
+       username,
+       role_name,
+       patient_id,
+       mysql_username,
+       is_active,
+       created_at,
+       updated_at
+FROM app_users
+ORDER BY role_name, username;

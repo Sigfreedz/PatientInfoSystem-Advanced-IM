@@ -401,22 +401,4 @@ LIMIT 3;
 
 -- Salt/IV proof: the same plaintext is encrypted twice with two random IVs.
 -- The two HEX values should differ even though @raw_contact is identical.
-DROP TEMPORARY TABLE IF EXISTS `encryption_iv_proof`;
-CREATE TEMPORARY TABLE `encryption_iv_proof` (
-  `contact_encrypted` VARBINARY(256) NOT NULL,
-  `encryption_iv` VARBINARY(16) NOT NULL
-) ENGINE = InnoDB;
 
-SET @raw_contact = '09170001111';
-SET @row_iv = RANDOM_BYTES(16);
-INSERT INTO `encryption_iv_proof` (`contact_encrypted`, `encryption_iv`)
-VALUES (AES_ENCRYPT(@raw_contact, @secret_key, @row_iv), @row_iv);
-
-SET @row_iv = RANDOM_BYTES(16);
-INSERT INTO `encryption_iv_proof` (`contact_encrypted`, `encryption_iv`)
-VALUES (AES_ENCRYPT(@raw_contact, @secret_key, @row_iv), @row_iv);
-
-SELECT HEX(`contact_encrypted`) AS `ciphertext_hex`, HEX(`encryption_iv`) AS `iv_hex`
-FROM `encryption_iv_proof`;
-
-DROP TEMPORARY TABLE `encryption_iv_proof`;

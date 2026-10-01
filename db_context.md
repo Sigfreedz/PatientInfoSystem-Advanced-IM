@@ -224,9 +224,11 @@ Combines every order with patient, catalog, and optional payment data. It expose
 
 ## Application Compatibility
 
-The current Flask code in `app.py` still queries the older dump names `patients`, `test_orders`, `test_catalog`, `cbc_results`, `urinalysis_results`, and `fecalysis_results`. Those names are not present in the verified live schema. Queries must be migrated to the live names documented here, or the application must be pointed at a database containing the legacy schema before those routes can work.
+The current Flask code in `app.py` uses the verified live table names: `clinic_patients`, `lab_test_catalog`, `lab_test`, `cbc`, `urinalysis`, `fecalysis`, and `payments`. New orders create a pending row in the matching result table, and lab-result submission updates that row.
 
-The live schema also includes `payments`, which is not currently used by the Flask routes. Billing totals in the current app are calculated from catalog prices, not from cumulative payment records.
+The files `schema.sql`, `seed.sql`, and `queries.sql` contain older names such as `patients`, `test_orders`, `test_catalog`, `cbc_results`, `urinalysis_results`, and `fecalysis_results`. Use `renamed_schema.sql`, `new_seed.sql`, and `crud_examples.sql` for the current schema.
+
+The application records payments through the `/payments/<order_id>` workflow, calculates paid and outstanding balances, encrypts receipt numbers, and exposes patient-scoped payment history through the patient portal.
 
 ## Implementation Notes
 

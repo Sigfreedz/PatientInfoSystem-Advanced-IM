@@ -8,12 +8,15 @@
 -- =====================================================
 
 -- Q1: List all patients (Basic SELECT)
-SELECT patient_id, first_name, last_name, age, sex, contact 
-FROM patients 
+SELECT patient_id, first_name, last_name, age, sex, contact
+FROM patients
 ORDER BY last_name, first_name;
 
 -- Q2: Find patients by age range (Advanced WHERE)
-SELECT patient_id, CONCAT(first_name, ' ', last_name) AS full_name, age, address
+SELECT patient_id,
+       CONCAT(first_name, ' ', last_name) AS full_name,
+       age,
+       address
 FROM patients
 WHERE age BETWEEN 20 AND 30
 ORDER BY age, last_name;
@@ -71,7 +74,7 @@ ORDER BY parasite_id;
 -- =====================================================
 
 -- Q11: JOIN - Patient + Order + Test Type (3-table JOIN)
-SELECT 
+SELECT
     p.patient_id,
     CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
     t.test_name,
@@ -84,7 +87,7 @@ INNER JOIN test_catalog t ON o.test_id = t.test_id
 ORDER BY o.order_date DESC;
 
 -- Q12: JOIN - Order + CBC Results + Patient Info
-SELECT 
+SELECT
     o.order_id,
     CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
     o.order_date,
@@ -92,16 +95,16 @@ SELECT
 FROM test_orders o
 INNER JOIN patients p ON o.patient_id = p.patient_id
 INNER JOIN cbc_results c ON o.order_id = c.order_id
-WHERE c.hemoglobin < 13.0  -- Flag low hemoglobin
+WHERE c.hemoglobin < 13.0
 ORDER BY c.hemoglobin;
 
 -- Q13: JOIN - Full Patient Diagnostic Summary (4-table JOIN)
-SELECT 
+SELECT
     p.patient_id,
     CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
     t.test_name,
     o.order_date,
-    CASE 
+    CASE
         WHEN t.test_name = 'CBC' THEN CONCAT('Hgb: ', c.hemoglobin, ' g/dL')
         WHEN t.test_name = 'URINALYSIS' THEN CONCAT('Protein: ', u.protein)
         WHEN t.test_name = 'FECALYSIS' THEN CONCAT('Parasite: ', f.parasite_id)
@@ -121,7 +124,7 @@ ORDER BY p.patient_id, o.order_date;
 -- =====================================================
 
 -- Q14: AGGREGATE - Total revenue by test type (SUM + GROUP BY)
-SELECT 
+SELECT
     t.test_name,
     COUNT(o.order_id) AS times_ordered,
     SUM(t.price) AS total_revenue
@@ -131,7 +134,7 @@ GROUP BY t.test_id, t.test_name
 ORDER BY total_revenue DESC;
 
 -- Q15: AGGREGATE - Average lab values by patient demographic (AVG + COUNT)
-SELECT 
+SELECT
     p.sex,
     COUNT(DISTINCT p.patient_id) AS patient_count,
     AVG(c.hemoglobin) AS avg_hemoglobin,
@@ -148,31 +151,36 @@ GROUP BY p.sex;
 -- =====================================================
 
 -- Q16: SUBQUERY - Patients who had CBC but NOT Urinalysis
-SELECT patient_id, CONCAT(first_name, ' ', last_name) AS patient_name
+SELECT patient_id,
+       CONCAT(first_name, ' ', last_name) AS patient_name
 FROM patients
 WHERE patient_id IN (
-    SELECT DISTINCT patient_id 
-    FROM test_orders 
+    SELECT DISTINCT patient_id
+    FROM test_orders
     WHERE test_id = (SELECT test_id FROM test_catalog WHERE test_name = 'CBC')
 )
 AND patient_id NOT IN (
-    SELECT DISTINCT patient_id 
-    FROM test_orders 
+    SELECT DISTINCT patient_id
+    FROM test_orders
     WHERE test_id = (SELECT test_id FROM test_catalog WHERE test_name = 'URINALYSIS')
 )
 ORDER BY patient_id;
 
 -- Q17: SUBQUERY - Find most expensive test ordered per patient
-SELECT 
+SELECT
     p.patient_id,
     CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
-    (SELECT MAX(t.price) 
-     FROM test_orders o2 
-     JOIN test_catalog t ON o2.test_id = t.test_id 
-     WHERE o2.patient_id = p.patient_id) AS max_test_price
+    (
+        SELECT MAX(t.price)
+        FROM test_orders o2
+        JOIN test_catalog t ON o2.test_id = t.test_id
+        WHERE o2.patient_id = p.patient_id
+    ) AS max_test_price
 FROM patients p
 WHERE EXISTS (
-    SELECT 1 FROM test_orders o3 WHERE o3.patient_id = p.patient_id
+    SELECT 1
+    FROM test_orders o3
+    WHERE o3.patient_id = p.patient_id
 )
 ORDER BY max_test_price DESC;
 
@@ -190,11 +198,11 @@ WHERE patient_id = 'PAT-001';
 -- Q19: UPDATE - Mark pending orders as completed
 -- This update only changes status; order_date and created_at remain unchanged
 -- Completion time is not captured in this schema; add a completed_at column if needed
--- For concurrent systems, run this inside a transaction as needed
 UPDATE test_orders
 SET status = 'COMPLETED'
 WHERE status = 'PENDING'
   AND order_date <= CURDATE() - INTERVAL 7 DAY;
+
 
 -- =====================================================
 -- SECTION 6: DELETE QUERIES (2 Required)
@@ -207,8 +215,6 @@ WHERE status = 'CANCELLED';
 
 -- Q21: DELETE - Remove a specific test order for a patient
 -- Example cleanup: remove PAT-004's fecalysis order
--- Defensive: limit to one test_id in case of duplicate names (lowest test_id selected)
--- test_name uses a case-insensitive collation in schema.sql
 DELETE FROM test_orders
 WHERE patient_id = 'PAT-004'
   AND test_id = (
@@ -218,3 +224,86 @@ WHERE patient_id = 'PAT-004'
       ORDER BY test_id
       LIMIT 1
   );
+
+
+-- =====================================================
+-- SECTION 7: QUERY OPTIMIZATION
+-- =====================================================
+-- Apply appropriate optimization techniques such as:
+-- indexing, EXPLAIN/EXPLAIN ANALYZE, query rewriting,
+-- efficient joins, and partitioning.
+
+-- O1: Create indexes on frequently filtered and joined columns.
+CREATE INDEX idx_patients_age
+    ON patients(age);
+
+CREATE INDEX idx_patients_last_name_first_name
+    ON patients(last_name, first_name);
+
+CREATE INDEX idx_test_orders_patient_id
+    ON test_orders(patient_id);
+
+CREATE INDEX idx_test_orders_test_id
+    ON test_orders(test_id);
+
+CREATE INDEX idx_test_orders_status_order_date
+    ON test_orders(status, order_date);
+
+CREATE INDEX idx_cbc_results_order_id
+    ON cbc_results(order_id);
+
+CREATE INDEX idx_cbc_results_hemoglobin
+    ON cbc_results(hemoglobin);
+
+CREATE INDEX idx_urinalysis_results_order_id
+    ON urinalysis_results(order_id);
+
+CREATE INDEX idx_urinalysis_results_protein
+    ON urinalysis_results(protein);
+
+CREATE INDEX idx_fecalysis_results_order_id
+    ON fecalysis_results(order_id);
+
+CREATE INDEX idx_fecalysis_results_parasite_id
+    ON fecalysis_results(parasite_id);
+
+CREATE INDEX idx_test_catalog_price
+    ON test_catalog(price);
+
+-- O2: EXPLAIN query plan for a frequently used JOIN query.
+EXPLAIN
+SELECT
+    p.patient_id,
+    CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
+    t.test_name,
+    o.order_date,
+    o.status
+FROM patients p
+JOIN test_orders o ON p.patient_id = o.patient_id
+JOIN test_catalog t ON o.test_id = t.test_id
+WHERE p.age BETWEEN 20 AND 30
+  AND o.status = 'COMPLETED'
+ORDER BY o.order_date DESC;
+
+-- O3: Query rewrite for better efficiency.
+SELECT
+    p.patient_id,
+    CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
+    MAX(t.price) AS max_test_price
+FROM patients p
+JOIN test_orders o ON p.patient_id = o.patient_id
+JOIN test_catalog t ON o.test_id = t.test_id
+GROUP BY p.patient_id, p.first_name, p.last_name
+ORDER BY max_test_price DESC;
+
+-- O4: Partitioning strategy for very large tables.
+-- Example for a large-scale production system:
+-- ALTER TABLE test_orders
+-- PARTITION BY RANGE (YEAR(order_date)) (
+--     PARTITION p2023 VALUES LESS THAN (2024),
+--     PARTITION p2024 VALUES LESS THAN (2025),
+--     PARTITION p2025 VALUES LESS THAN (2026),
+--     PARTITION p_future VALUES LESS THAN MAXVALUE
+-- );
+
+-- End of optimization section.
